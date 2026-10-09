@@ -15,6 +15,7 @@ export async function getJobs(): Promise<Job[]> {
     ...j,
     responsibilities: arr(j.responsibilities),
     requirements: arr(j.requirements),
+    qualification: arr(j.qualification),
     benefits: arr(j.benefits),
   })) as Job[]
 }

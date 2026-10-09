@@ -100,6 +100,7 @@ export default async function JobPage({ params }: Props) {
             {extras && <Block title="What you'll learn" items={extras.learn} check />}
             <Block title="Responsibilities" items={job.responsibilities} />
             <Block title="Requirements" items={job.requirements} />
+            <Block title="Qualification" items={job.qualification} />
             <Block title="Benefits" items={job.benefits} check />
           </article>
 

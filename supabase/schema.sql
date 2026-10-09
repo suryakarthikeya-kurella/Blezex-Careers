@@ -14,6 +14,7 @@ create table if not exists public.jobs (
   description text not null,
   responsibilities text[] not null default '{}',
   requirements text[] not null default '{}',
+  qualification text[] not null default '{}',
   benefits text[] not null default '{}',
   stipend text,
   duration text,
@@ -69,3 +70,10 @@ insert into public.jobs (title, department, employment_type, location, descripti
   ('AI Engineer Intern', 'Engineering (AI)', 'Internship', 'Remote', 'Build and test AI-powered solutions and automations for client projects alongside the BlezeX engineering team.', array['Prototype AI features and automation workflows', 'Work with APIs and language models', 'Test and document solutions', 'Support client project delivery']::text[], array['Python or JavaScript basics', 'Interest in AI and machine learning', 'Problem-solving mindset', 'Willingness to learn quickly']::text[], array['Work on real AI projects', 'Mentorship from engineers', 'Internship certificate', 'PPO consideration']::text[], null, 'To be announced', 'future'),
   ('Full Stack Developer Intern', 'Engineering', 'Internship', 'Remote', 'Help design, build and ship web applications for BlezeX and its clients across the front end and back end.', array['Build responsive interfaces with React or Next.js', 'Develop APIs and database integrations', 'Fix bugs and improve performance', 'Write clean, documented code']::text[], array['HTML, CSS and JavaScript fundamentals', 'Familiarity with React or a similar framework', 'Basic understanding of databases', 'Portfolio or GitHub projects preferred']::text[], array['Real client project experience', 'Code reviews and mentorship', 'Internship certificate', 'PPO consideration']::text[], null, 'To be announced', 'future')
 on conflict (title) do nothing;
+
+-- Qualification section (for databases created before this column existed)
+alter table public.jobs add column if not exists qualification text[] not null default '{}';
+update public.jobs set qualification = array['BBA, B.Com, BCA, B.Tech, BA, or any relevant bachelor''s degree.', 'Fresh graduates are eligible.', 'Students in their final year may also apply.'] where title = 'Business Development Associate';
+update public.jobs set qualification = array['BBA, B.Com, BCA, B.Tech, MBA, or any relevant degree.', 'Open to final-year students, recent graduates, and eligible postgraduate students.'] where title = 'Business Growth Consultant';
+update public.jobs set qualification = array['BBA, B.Com, BCA, BA, B.Tech, or any relevant degree.', 'Students specializing in Marketing, Communications, or Digital Media are preferred.', 'Open to students and fresh graduates.'] where title = 'Digital Marketing Intern';
+update public.jobs set qualification = array['Must be currently enrolled in a recognized college or university.', 'Open to students pursuing B.Tech, BCA, BBA, B.Com, BA, MCA, MBA, or any other degree.'] where title = 'Campus Representative';

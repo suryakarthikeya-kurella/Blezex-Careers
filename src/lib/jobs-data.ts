@@ -25,6 +25,11 @@ export const fallbackJobs: Job[] = [
       "Comfortable working towards targets",
       "Freshers with the right attitude are welcome"
     ],
+    "qualification": [
+      "BBA, B.Com, BCA, B.Tech, BA, or any relevant bachelor's degree.",
+      "Fresh graduates are eligible.",
+      "Students in their final year may also apply."
+    ],
     "benefits": [
       "Direct mentorship from company leadership",
       "Performance-linked incentives",
@@ -55,6 +60,10 @@ export const fallbackJobs: Job[] = [
       "Clear communication and presentation skills",
       "Understanding of business basics such as sales, marketing or operations",
       "Curiosity about AI, automation and digital tools"
+    ],
+    "qualification": [
+      "BBA, B.Com, BCA, B.Tech, MBA, or any relevant degree.",
+      "Open to final-year students, recent graduates, and eligible postgraduate students."
     ],
     "benefits": [
       "Work closely with company leadership",
@@ -87,6 +96,11 @@ export const fallbackJobs: Job[] = [
       "Basic Canva or similar design skills",
       "Willingness to learn and take feedback"
     ],
+    "qualification": [
+      "BBA, B.Com, BCA, BA, B.Tech, or any relevant degree.",
+      "Students specializing in Marketing, Communications, or Digital Media are preferred.",
+      "Open to students and fresh graduates."
+    ],
     "benefits": [
       "Internship certificate on completion",
       "Mentorship from the marketing lead",
@@ -118,6 +132,10 @@ export const fallbackJobs: Job[] = [
       "Confident communicator",
       "A few hours per week to commit"
     ],
+    "qualification": [
+      "Must be currently enrolled in a recognized college or university.",
+      "Open to students pursuing B.Tech, BCA, BBA, B.Com, BA, MCA, MBA, or any other degree."
+    ],
     "benefits": [
       "Certificate and recognition",
       "Leadership and networking experience",
@@ -148,6 +166,7 @@ export const fallbackJobs: Job[] = [
       "Problem-solving mindset",
       "Willingness to learn quickly"
     ],
+    "qualification": [],
     "benefits": [
       "Work on real AI projects",
       "Mentorship from engineers",
@@ -178,6 +197,7 @@ export const fallbackJobs: Job[] = [
       "Basic understanding of databases",
       "Portfolio or GitHub projects preferred"
     ],
+    "qualification": [],
     "benefits": [
       "Real client project experience",
       "Code reviews and mentorship",

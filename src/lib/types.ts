@@ -10,6 +10,7 @@ export interface Job {
   description: string
   responsibilities: string[]
   requirements: string[]
+  qualification: string[]
   benefits: string[]
   stipend: string | null
   duration: string | null
