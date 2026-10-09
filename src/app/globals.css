@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body { @apply bg-white font-sans text-body antialiased; }
+h1, h2, h3, h4 { @apply font-heading tracking-tight text-ink; }
+:focus-visible { outline: 3px solid #FF4D1C; outline-offset: 2px; }
+::selection { background: #FF4D1C; color: #fff; }
+
+@layer components {
+  .field { @apply w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-base text-ink transition placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 disabled:opacity-60; }
+  .field[aria-invalid='true'] { @apply border-accent; }
+  .label { @apply mb-1.5 block text-sm font-semibold text-ink; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }

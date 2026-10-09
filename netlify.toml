@@ -1,0 +1,8 @@
+[build]
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "20"
+  # These two values are public by design (they appear in the browser bundle),
+  # so Netlify's secret scanner must not flag them.
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SITE_URL"
