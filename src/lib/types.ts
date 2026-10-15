@@ -28,6 +28,7 @@ export interface Application {
   city: string
   state: string
   college: string
+  college_id?: string | null
   degree: string
   branch: string
   graduation_year: number
@@ -43,4 +44,13 @@ export interface Application {
   created_at: string
 }
 
+export interface College {
+  id: string
+  name: string
+  code: string
+  status: 'Active' | 'Inactive'
+  created_at?: string
+}
+
 export type LoginState = { error?: string }
+

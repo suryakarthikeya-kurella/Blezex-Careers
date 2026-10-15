@@ -77,3 +77,33 @@ update public.jobs set qualification = array['BBA, B.Com, BCA, B.Tech, BA, or an
 update public.jobs set qualification = array['BBA, B.Com, BCA, B.Tech, MBA, or any relevant degree.', 'Open to final-year students, recent graduates, and eligible postgraduate students.'] where title = 'Business Growth Consultant';
 update public.jobs set qualification = array['BBA, B.Com, BCA, BA, B.Tech, or any relevant degree.', 'Students specializing in Marketing, Communications, or Digital Media are preferred.', 'Open to students and fresh graduates.'] where title = 'Digital Marketing Intern';
 update public.jobs set qualification = array['Must be currently enrolled in a recognized college or university.', 'Open to students pursuing B.Tech, BCA, BBA, B.Com, BA, MCA, MBA, or any other degree.'] where title = 'Campus Representative';
+
+-- =====================================================================
+-- Colleges & Partner Institutions
+-- =====================================================================
+create table if not exists public.colleges (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  code text not null,
+  status text not null default 'Active' check (status in ('Active', 'Inactive')),
+  created_at timestamptz not null default now()
+);
+create unique index if not exists colleges_code_key on public.colleges (code);
+create unique index if not exists colleges_name_lower_key on public.colleges (lower(name));
+
+alter table public.colleges enable row level security;
+drop policy if exists "Public can read active colleges" on public.colleges;
+create policy "Public can read active colleges" on public.colleges
+  for select to anon, authenticated using (true);
+
+-- Link applications to colleges table
+alter table public.applications add column if not exists college_id uuid references public.colleges (id) on delete set null;
+create index if not exists applications_college_id_idx on public.applications (college_id);
+
+-- Seed initial partner colleges
+insert into public.colleges (name, code, status)
+values ('Sri Sai Degree College', 'SRI-SAI-DEGREE-COLLEGE', 'Active')
+on conflict (code) do update
+set name = excluded.name,
+    status = excluded.status;
+
