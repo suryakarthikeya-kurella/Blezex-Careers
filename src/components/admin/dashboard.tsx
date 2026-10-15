@@ -6,9 +6,8 @@ import { Card } from '@/components/ui/card'
 import { Input, Select } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { cn, formatDate } from '@/lib/utils'
-import { STATUSES, type Application, type ApplicationStatus, type College } from '@/lib/types'
+import { STATUSES, type Application, type ApplicationStatus } from '@/lib/types'
 import { deleteApplicationAction, updateStatusAction } from '@/app/admin/actions'
-
 
 const PAGE_SIZE = 25
 const safeHref = (u?: string | null) => (u && /^https?:\/\//i.test(u) ? u : undefined)
@@ -51,7 +50,7 @@ function Detail({ label, value, href }: { label: string; value?: string | number
   )
 }
 
-export function Dashboard({ initial, colleges: partnerColleges = [], loadError }: { initial: Application[]; colleges?: College[]; loadError?: string | null }) {
+export function Dashboard({ initial, loadError }: { initial: Application[]; loadError?: string | null }) {
   const [apps, setApps] = useState(initial)
   const [q, setQ] = useState('')
   const [position, setPosition] = useState('')
@@ -67,13 +66,7 @@ export function Dashboard({ initial, colleges: partnerColleges = [], loadError }
   const [, startTransition] = useTransition()
 
   const positions = useMemo(() => [...new Set(apps.map(a => a.position))].sort(), [apps])
-  const colleges = useMemo(() => {
-    const list = new Set<string>()
-    for (const c of partnerColleges) if (c.name) list.add(c.name)
-    for (const a of apps) if (a.college) list.add(a.college)
-    return [...list].sort((a, b) => a.localeCompare(b))
-  }, [apps, partnerColleges])
-
+  const colleges = useMemo(() => [...new Set(apps.map(a => a.college))].sort((a, b) => a.localeCompare(b)), [apps])
 
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase()

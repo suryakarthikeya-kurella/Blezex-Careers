@@ -4,9 +4,8 @@ import { Dashboard } from '@/components/admin/dashboard'
 import { ProfileCard } from '@/components/admin/profile-card'
 import { requireAdmin } from '@/lib/admin-auth'
 import { getSupabase } from '@/lib/supabase'
-import { getColleges } from '@/lib/colleges'
 import { maskEmail } from '@/lib/utils'
-import type { Application, College } from '@/lib/types'
+import type { Application } from '@/lib/types'
 import { logoutAction } from './actions'
 
 export const dynamic = 'force-dynamic'
@@ -16,21 +15,15 @@ export default async function AdminPage() {
   await requireAdmin()
 
   let apps: Application[] = []
-  let partnerColleges: College[] = []
   let loadError: string | null = null
   const sb = getSupabase()
   if (!sb) {
     loadError = 'Supabase is not connected yet. Add NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY to .env.local and restart the server.'
   } else {
-    const [appsRes, collegesRes] = await Promise.all([
-      sb.from('applications').select('*').order('created_at', { ascending: false }).limit(5000),
-      getColleges(),
-    ])
-    partnerColleges = collegesRes
-    if (appsRes.error) loadError = `Could not load applications: ${appsRes.error.message}. Check that you ran supabase/schema.sql.`
-    else apps = (appsRes.data ?? []) as Application[]
+    const { data, error } = await sb.from('applications').select('*').order('created_at', { ascending: false }).limit(5000)
+    if (error) loadError = `Could not load applications: ${error.message}. Check that you ran supabase/schema.sql.`
+    else apps = (data ?? []) as Application[]
   }
-
 
   return (
     <>
@@ -48,9 +41,8 @@ export default async function AdminPage() {
           <div><h1 className="text-3xl font-extrabold sm:text-4xl">Applications</h1><p className="mt-1 text-muted">Review candidates, update their status and export your data.</p></div>
           <ProfileCard maskedEmail={maskEmail(process.env.ADMIN_EMAIL ?? '')} />
         </div>
-        <Dashboard initial={apps} colleges={partnerColleges} loadError={loadError} />
+        <Dashboard initial={apps} loadError={loadError} />
       </main>
     </>
   )
-
 }

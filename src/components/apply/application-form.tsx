@@ -6,14 +6,12 @@ import { AlertCircle, Check, CheckCircle2, ChevronLeft, ChevronRight, Loader2, P
 import type { ZodTypeAny } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Input, Select, Textarea } from '@/components/ui/input'
+import { Input, Textarea } from '@/components/ui/input'
 import { submitApplication } from '@/app/apply/actions'
 import { educationSchema, emptyForm, personalSchema, positionSchema, professionalSchema, resumeSchema, reviewSchema, type FormValues } from '@/lib/validation'
-import type { College } from '@/lib/types'
 
 interface JobOption { title: string; department: string; employment_type: string; location: string }
 type Errors = Partial<Record<string, string>>
-
 
 const STEPS: { title: string; short: string; schema: ZodTypeAny }[] = [
   { title: 'Select a position', short: 'Position', schema: positionSchema },
@@ -46,12 +44,10 @@ function Field({ name, label, value, error, hint, required, type = 'text', place
   )
 }
 
-export function ApplicationForm({ jobs, colleges = [], initialPosition }: { jobs: JobOption[]; colleges?: College[]; initialPosition: string }) {
+export function ApplicationForm({ jobs, initialPosition }: { jobs: JobOption[]; initialPosition: string }) {
   const router = useRouter()
   const [step, setStep] = useState(0)
   const [values, setValues] = useState<FormValues>({ ...emptyForm, position: initialPosition })
-  const [selectedCollegeChoice, setSelectedCollegeChoice] = useState<string>('')
-  const [customCollege, setCustomCollege] = useState<string>('')
   const [errors, setErrors] = useState<Errors>({})
   const [submitting, setSubmitting] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
@@ -59,29 +55,11 @@ export function ApplicationForm({ jobs, colleges = [], initialPosition }: { jobs
   const headingRef = useRef<HTMLHeadingElement>(null)
   const mounted = useRef(false)
 
-
   useEffect(() => {
     if (!mounted.current) { mounted.current = true; return }
     headingRef.current?.focus()
     headingRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }, [step])
-
-  // Keep dropdown selection synced with values.college (e.g. if edited from review step)
-  useEffect(() => {
-    if (!values.college) {
-      setSelectedCollegeChoice('')
-      setCustomCollege('')
-    } else {
-      const match = colleges.find(c => c.name.toLowerCase() === values.college.toLowerCase())
-      if (match) {
-        setSelectedCollegeChoice(match.name)
-      } else {
-        setSelectedCollegeChoice('__OTHER__')
-        setCustomCollege(values.college)
-      }
-    }
-  }, [values.college, colleges])
-
 
   const set = (name: keyof FormValues, value: string | boolean) => {
     setValues(v => ({ ...v, [name]: value }))
@@ -190,61 +168,8 @@ export function ApplicationForm({ jobs, colleges = [], initialPosition }: { jobs
             </>)}
 
             {step === 2 && (<>
-              <div>
-                <label htmlFor="f-college-select" className="label">
-                  College / University<span className="text-accent"> *</span>
-                </label>
-                <Select
-                  id="f-college-select"
-                  name="college_select"
-                  value={selectedCollegeChoice}
-                  aria-invalid={errors.college ? true : undefined}
-                  aria-required="true"
-                  onChange={e => {
-                    const val = e.target.value
-                    setSelectedCollegeChoice(val)
-                    if (val === '__OTHER__') {
-                      set('college', customCollege)
-                    } else if (val) {
-                      set('college', val)
-                    } else {
-                      set('college', '')
-                    }
-                  }}
-                >
-                  <option value="">Select your college or university</option>
-                  {colleges.map(c => (
-                    <option key={c.id || c.code} value={c.name}>
-                      {c.name}
-                    </option>
-                  ))}
-                  <option value="__OTHER__">Other (Enter manually)</option>
-                </Select>
-                {selectedCollegeChoice === '__OTHER__' && (
-                  <div className="mt-3">
-                    <Field
-                      name="college"
-                      label="Specify college / university name"
-                      required
-                      placeholder="Enter your college or university name"
-                      value={customCollege}
-                      error={errors.college}
-                      onChange={(_name, val) => {
-                        setCustomCollege(val)
-                        set('college', val)
-                      }}
-                    />
-                  </div>
-                )}
-                {selectedCollegeChoice !== '__OTHER__' && errors.college && (
-                  <p role="alert" className="mt-1.5 flex items-center gap-1 text-sm font-medium text-accent">
-                    <AlertCircle aria-hidden className="h-4 w-4" />
-                    {errors.college}
-                  </p>
-                )}
-              </div>
+              <Field name="college" label="College name" required value={values.college} error={errors.college} onChange={setText} />
               <div className="grid gap-5 sm:grid-cols-2">
-
                 <Field name="degree" label="Degree" required placeholder="e.g. B.Tech, BBA, MBA" value={values.degree} error={errors.degree} onChange={setText} />
                 <Field name="branch" label="Branch / specialization" required placeholder="e.g. Computer Science" value={values.branch} error={errors.branch} onChange={setText} />
               </div>
