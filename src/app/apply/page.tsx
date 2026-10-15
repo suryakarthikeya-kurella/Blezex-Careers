@@ -7,6 +7,7 @@ import { Container } from '@/components/site/section'
 import { ApplicationForm } from '@/components/apply/application-form'
 import { Card } from '@/components/ui/card'
 import { getJobs } from '@/lib/jobs'
+import { getColleges } from '@/lib/colleges'
 import { slugify } from '@/lib/utils'
 import { SITE } from '@/lib/site'
 import { TALENT_POOL_TITLE, talentPoolOption } from '@/lib/talent-pool'
@@ -22,7 +23,8 @@ const next = ['We review your application.', 'If your profile fits, we contact y
 
 export default async function ApplyPage({ searchParams }: { searchParams: Promise<{ job?: string }> }) {
   const { job } = await searchParams
-  const jobs = (await getJobs()).filter(j => j.status === 'active')
+  const [allJobs, colleges] = await Promise.all([getJobs(), getColleges()])
+  const jobs = allJobs.filter(j => j.status === 'active')
   const initial = job === 'talent-pool' ? TALENT_POOL_TITLE : (jobs.find(j => slugify(j.title) === job)?.title ?? '')
   const options = [...jobs.map(j => ({ title: j.title, department: j.department, employment_type: j.employment_type, location: j.location })), talentPoolOption]
   return (
@@ -35,7 +37,8 @@ export default async function ApplyPage({ searchParams }: { searchParams: Promis
           </nav>
           <h1 className="mb-6 text-3xl font-extrabold sm:text-4xl">Apply to BlezeX</h1>
           <div className="grid gap-8 lg:grid-cols-[1fr_320px] lg:items-start">
-            <ApplicationForm jobs={options} initialPosition={initial} />
+            <ApplicationForm jobs={options} colleges={colleges} initialPosition={initial} />
+
             <aside className="grid gap-4">
               <Card className="p-5">
                 <h2 className="mb-3 font-heading text-lg font-extrabold">What happens next</h2>
