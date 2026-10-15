@@ -33,23 +33,7 @@ export async function submitApplication(values: FormValues): Promise<SubmitResul
   if (lookupError) return { ok: false, error: 'Something went wrong. Please try again in a moment.' }
   if (existing?.length) return { ok: false, error: 'You have already applied for this position with this email address.' }
 
-  // Resolve matching college_id if college exists in colleges table
-  let collegeId: string | null = null
-  try {
-    const { data: collegeMatch } = await sb
-      .from('colleges')
-      .select('id')
-      .ilike('name', d.college.trim())
-      .limit(1)
-    if (collegeMatch?.[0]?.id && isUuid(collegeMatch[0].id)) {
-      collegeId = collegeMatch[0].id
-    }
-  } catch {
-    // If colleges table is not yet created or column does not exist, graceful fallback
-    collegeId = null
-  }
-
-  const payload: Record<string, unknown> = {
+  const { error } = await sb.from('applications').insert({
     job_id: job && isUuid(job.id) ? job.id : null,
     position,
     full_name: d.full_name, email, phone: d.phone, city: d.city, state: d.state,
@@ -60,25 +44,10 @@ export async function submitApplication(values: FormValues): Promise<SubmitResul
     resume_link: d.resume_link,
     why_join_blezex: d.why_join_blezex || null,
     available_start_date: d.available_start_date || null,
-  }
-
-  if (collegeId) {
-    payload.college_id = collegeId
-  }
-
-  let { error } = await sb.from('applications').insert(payload)
-
-  // If insert failed because college_id column doesn't exist yet in the database, retry without college_id
-  if (error && collegeId && (error.message.includes('college_id') || error.code === 'PGRST204' || error.code === '42703')) {
-    delete payload.college_id
-    const retry = await sb.from('applications').insert(payload)
-    error = retry.error
-  }
-
+  })
   if (error) {
     console.error('Application insert failed:', error.message)
     return { ok: false, error: 'We could not save your application. Please try again.' }
   }
   return { ok: true }
 }
-
